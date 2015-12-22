@@ -1,0 +1,14 @@
+db.mycollection.aggregate([
+  {
+    $unwind : '$box'
+  },
+  {
+    $group : {
+      _id : '$box.team.drb',
+      winPercentage : { $avg : '$box.won' }
+    }
+  },
+  {
+    $sort : { _id : 1 }
+  }
+]);
