@@ -1,0 +1,35 @@
+db.mycollection.aggregate([
+  {
+    $unwind : '$box'
+  },
+  {
+    $project : {
+      _id : '$_id',
+      stat : {
+        $cond : [
+          { $gt : ['$box.won', 0] },
+          '$box.team.drb',
+          { $multiply : ['$box.team.drb', -1] }
+        ]
+      }
+    }
+  },
+  {
+    $group : {
+      _id : '$_id',
+      stat : { $sum : '$stat' }
+    }
+  },
+  {
+    $project : {
+      _id : '$_id',
+      winningTeamHigher : { $gte : ['$stat', 0] }
+    }
+  },
+  {
+    $group : {
+      _id : '$winningTeamHigher',
+      count : { $sum : 1 }
+    }
+  }
+]);
